@@ -1,0 +1,15 @@
+<ion-content>
+  <ion-label>
+    <ion-input #usernameInput placeholder="nom"></ion-input>
+  </ion-label>
+
+  <ion-label>
+    <ion-input #roomInput placeholder="identifiant de partie"></ion-input>
+  </ion-label>
+
+
+  <ion-button [disabled]="!usernameInput.value || !roomInput.value"
+    (click)="playGame(usernameInput.value.toString(), roomInput.value.toString())">
+    Jouer !
+  </ion-button>
+</ion-content>

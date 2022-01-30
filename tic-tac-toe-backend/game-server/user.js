@@ -25,7 +25,7 @@ function userJoin(socketId, username, room){
 }
 
 function userLeft(username){
-    users.filter(user => user.username !== username);
+    users = users.filter(user => user.username !== username);
 }
 
 function isRoomFull(roomId) {
@@ -45,10 +45,21 @@ function isRoomFull(roomId) {
     return resultat;
 }
 
+function getPlayersRoom(room){
+    let count = 0;
+    users.forEach(user => {
+        if(user.room === room){
+            count++;
+        }
+    });
+    return count;
+}
+
 module.exports = {
     getUser,
     isUsernameTaken,
     userJoin,
     isRoomFull,
-    userLeft
+    userLeft,
+    getPlayersRoom
 }

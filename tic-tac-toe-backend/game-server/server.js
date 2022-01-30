@@ -6,12 +6,18 @@ const io = require('socket.io')(server, {
     }
 });
 
-const { getUser, isUsernameTaken, userJoin, isRoomFull, userLeft } = require('./user');
+const { getUser, isUsernameTaken, userJoin, isRoomFull, userLeft, getPlayersRoom } = require('./user');
 
 
 io.on('connect', (socket) => {
     socket.on('message', (data) => {
-        io.in(data.room).emit('message', { user: data.username, message: data.message });
+        io.in(data.room).emit('message', { user: data.username, message: data.message, room: data.room });
+    })
+
+    socket.on('getNbPlayersRoom', function(data, cb) {
+        cb({
+            nbPlayers: getPlayersRoom(data.room)
+        })
     })
 
     socket.on('join', function (data, cb) {
@@ -21,23 +27,29 @@ io.on('connect', (socket) => {
             }); 
         }
         else{
-            userJoin(socket.id, data.username, data.room);
-            socket.join(data.room);
-            console.log(data.username + " joined room: " + data.room);
-            cb({
-                message: 'succesfully joined room ' + data.room
-            }); 
-            io.in(data.room).emit('roomMessage', { username: data.username, message: 'has joined the room' });
+            if(getPlayersRoom(data.room) > 1){
+                cb({
+                    joined: false,
+                    message: 'This party is full'
+                }); 
+            }
+            else{
+                userJoin(socket.id, data.username, data.room);
+                socket.join(data.room);
+                console.log(data.username + " joined room: " + data.room);
+                cb({
+                    joined: true,
+                    message: 'succesfully joined room ' + data.room
+                }); 
+                io.in(data.room).emit('message', { username: data.username,  message: 'has joined the room', room: data.room, });
+            }
         }
 
-        socket.on('leave', function(data){
-            console.log('user ' + data.username + ' has left the room ' + data.room);
-            io.in(data.room).emit('userLeft', {user: data.username, room: data.room, message: 'user left room'});
-            socket.leave(data.room);
-            userLeft(data.username)
+        socket.on('endGame', function(data){
+            userLeft(data.username);
+            console.log("ending game");
         });
     })
-
 })
 
 server.listen(3000, function() {
