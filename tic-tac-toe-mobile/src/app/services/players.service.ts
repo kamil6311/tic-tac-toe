@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { concatMap, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Player } from '../model/player';
 import { GameService } from './game.service';
 
@@ -9,25 +9,15 @@ import { GameService } from './game.service';
 })
 export class PlayersService {
 
-  private $player: Observable<Player> = new Observable<Player>(obs => obs.next(new Player("", "")));
+  private $player: Observable<Player> = new Observable<Player>(obs => obs.next(new Player("", true, true, "")));
 
   constructor(private _gameService: GameService) {
 
   }
 
-  public setPlayer(username: string, room: string): Observable<any> {
+  public setPlayer(username: string): Observable<any> {
     return this.$player.pipe(
-      concatMap((player: Player) => {
-        return this._gameService.getNbPlayersRoom(room).pipe(
-          map((response: {nbPlayers: number}) => {
-            let userValue = 'X';
-            if(response.nbPlayers > 0){
-              userValue = 'O';
-            }
-            return new Player(username, userValue)
-          })
-        )
-      })
+      map(() => new Player(username, true, true, this._gameService.socketId))
     );
   }
 

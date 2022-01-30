@@ -8,8 +8,11 @@
   </ion-label>
 
 
-  <ion-button [disabled]="!usernameInput.value || !roomInput.value"
-    (click)="playGame(usernameInput.value.toString(), roomInput.value.toString())">
+  <ion-button (click)="createGame(usernameInput.value.toString())">
     Jouer !
+  </ion-button>
+  <ion-button [disabled]="!usernameInput.value || !roomInput.value"
+    (click)="joinGame(usernameInput.value.toString(), roomInput.value.toString())">
+    Rejoindre !
   </ion-button>
 </ion-content>

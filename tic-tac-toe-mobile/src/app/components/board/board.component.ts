@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { PlayersService } from 'src/app/services/players.service';
+import { tap } from 'rxjs/operators';
+import { Player } from '../../model/player';
+import { GameService } from '../../services/game.service';
 
 @Component({
   selector: 'app-board',
@@ -12,17 +14,56 @@ export class BoardComponent implements OnInit {
   public xIsNext: boolean;
   public winner: string;
 
-  constructor(private _playersService: PlayersService) { }
+  public ennemyPlayer: Player;
+  public turnMessage: string;
+
+  constructor(private _gameService: GameService) {
+
+  }
 
   ngOnInit() {
-    this._playersService.player.subscribe();
+    this._gameService.startGame().pipe(
+      tap((ennemyPlayer: Player) => {
+        if(this._gameService.player.host && this._gameService.player.turn){
+          this.turnMessage = `C'est ton tour de jouer !`;
+        }
+        else{
+          this.turnMessage = `C'est au tour de ${ennemyPlayer.username} de jouer !`;
+        }
+      })
+    ).subscribe();
+
+    this._gameService.onPlayed().pipe(
+      tap((ennemyPlayer: Player) => {
+        const player = this._gameService.player;
+
+        if(ennemyPlayer.socketId !== player.socketId && !ennemyPlayer.turn){
+          //modifier la case avec played cell de enemy
+          this.squares.splice(ennemyPlayer.playedCell, 1, 'O');
+
+          if(ennemyPlayer.win){
+            //perdu
+          }
+
+          this.turnMessage = `C'est ton tour de jouer !`;
+          this._gameService.player.turn = true;
+        }
+        else {
+          if(player.win){
+            //win
+          }
+
+          this.turnMessage = `C'est au tour de ${ennemyPlayer.username} de jouer !`;
+          this._gameService.player.turn = false;
+        }
+      })
+    ).subscribe();
+
     this.newGame();
   }
 
   public newGame(): void {
     this.squares = Array(9).fill(null);
-    this.winner = null;
-    this.xIsNext = true;
   }
 
   public get player() {
@@ -30,12 +71,16 @@ export class BoardComponent implements OnInit {
   }
 
   public makeMove(index: number): void {
+    let win: boolean = false;
+
     if(!this.squares[index]){
-      this.squares.splice(index, 1, this.player);
-      this.xIsNext = !this.xIsNext;
+      this.squares.splice(index, 1, 'X');
     }
 
-    this.winner = this.calculateWinner();
+    if(this.calculateWinner() && this.calculateWinner() === 'X'){
+      win = true;
+    }
+    this._gameService.play(index, win);
   }
 
   public calculateWinner(): string {

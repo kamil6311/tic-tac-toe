@@ -1,10 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { concatMap, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { GameService } from 'src/app/services/game.service';
-import { PlayersService } from 'src/app/services/players.service';
-import { Player } from '../../model/player';
 
 @Component({
   selector: 'app-home',
@@ -17,42 +15,34 @@ export class HomePage implements OnInit, OnDestroy {
 
   constructor(
     private _router: Router,
-    private _playersService: PlayersService,
     private _gameService: GameService,
     private _alterCtrl: AlertController
     ) {}
 
   ngOnDestroy(): void {
-    this._playersService.player.pipe(
-      tap((player: Player) => {
-        this._gameService.disconnect(player, this.room);
-      })
-    ).subscribe();
-
   }
 
   ngOnInit(): void {
   }
 
-  public playGame(username: string, room: string): void{
-    this.room = room;
-    this._playersService.setPlayer(username, room).pipe(
-        concatMap((player: Player) => {
-          return this._gameService.joinGame(player, room).pipe(
-            tap((result: { joined: boolean, message: string}) => {
-              if(!result.joined){
-                this._alterCtrl.create({
-                  header: 'Erreur',
-                  message: "Impossible de rejoindre cette partie.",
-                  buttons: ['OK'],
-                }).then((poAlert: HTMLIonAlertElement) => poAlert.present());
-              }
-              else{
-                this._router.navigateByUrl('/play');
-              }
-            })
-          );
-        })
+  public createGame(username: string): void{
+    this._gameService.setPlayerUsername(username);
+    this._gameService.createGame().pipe(
+      tap((result: { joined: boolean, room: string, message: string }) => {
+        if(result.joined){
+          this._router.navigateByUrl(`/play/${result.room}`);
+        }
+      })
+    ).subscribe();
+  }
+
+  public joinGame(username, room){
+    this._gameService.joinGame(username, room).pipe(
+      tap((result: { joined: boolean, room: string, message: string }) => {
+        if(result.joined){
+          this._router.navigateByUrl(`/play/${result.room}`);
+        }
+      })
     ).subscribe();
   }
 

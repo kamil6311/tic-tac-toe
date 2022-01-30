@@ -10,11 +10,46 @@ export class GameService implements OnInit {
 
   private socket: Socket;
 
+  private _player: Player = new Player("", true, true, "");
+
+  public get player(): Player {
+    return this._player;
+  }
+
   constructor() {
     this.socket = io('http://localhost:3000');
+    this.socket.on('play', (ennemyPlayer: Player) => {
+      console.log("jfklsjfklsjfgkjglk");
+    });
   }
 
   ngOnInit(): void {
+
+  }
+
+  public play(playedCell: number, isWinner: boolean): void {
+    this._player.playedCell = playedCell;
+    this._player.win = isWinner;
+    this._player.turn = false;
+    this.socket.emit('play', this._player);
+  }
+
+  public onPlayed(): Observable<Player> {
+    return new Observable<Player>((obs) => {
+      this.socket.on('play', (ennemyPlayer: Player) => {
+        console.log("jfklsjfklsjfgkjglk");
+
+        obs.next(ennemyPlayer)
+      });
+    })
+  }
+
+  public get socketId(){
+    return this.socket.id;
+  }
+
+  public setPlayerUsername(username: string): Player {
+    return this._player = new Player(username, true, true, this.socket.id);
   }
 
   public getNbPlayersRoom(room: string): Observable<{ nbPlayers: number }> {
@@ -25,9 +60,20 @@ export class GameService implements OnInit {
     })
   }
 
-  public joinGame(player: Player, room: string): Observable<{message: string}>{
-    return new Observable<{message: string}>(obs => {
-      this.socket.emit('join', { username: player.username, room: room }, (cb: { joined: boolean, message: string })  => {
+  public createGame(): Observable<{ joined: boolean, room: string, message: string }>{
+    return new Observable<{ joined: boolean, room: string, message: string }>(obs => {
+      this.socket.emit('playerData', this.player, (cb: { joined: boolean, room: string, message: string })  => {
+        console.log(cb);
+        this._player.roomId = cb.room;
+        obs.next(cb);
+      });
+    })
+  }
+
+  public joinGame(username: string, roomId: string): Observable<{ joined: boolean, room: string, message: string }>{
+    this._player = new Player(username, false, false, this.socket.id, roomId);
+    return new Observable<{ joined: boolean, room: string, message: string }>(obs => {
+      this.socket.emit('playerData', this.player, (cb: { joined: boolean, room: string, message: string })  => {
         console.log(cb);
         obs.next(cb);
       });
@@ -43,6 +89,16 @@ export class GameService implements OnInit {
   }
 
   public disconnect(player: Player, room: string){
-    this.socket.emit('leave', { username: player.username, room: room});
+    this.socket.emit('leave', { username: player.username, room: room });
   }
+
+  public startGame(): Observable<Player> {
+    return new Observable<Player>((obs) => {
+      this.socket.on('gameStarting', (players: Player[]) => {
+        console.log("game starting");
+        obs.next(players.find(p => p.socketId != this._player.socketId))
+      });
+    });
+  }
+
 }
