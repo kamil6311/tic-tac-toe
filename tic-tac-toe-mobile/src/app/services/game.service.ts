@@ -44,6 +44,18 @@ export class GameService implements OnInit {
     this.socket.emit('replay', this._player);
   }
 
+  public onEquality(): Observable<Player> {
+    return new Observable<Player>((obs) => {
+      this.socket.on('equality', (player: Player) => {
+        obs.next(player);
+      })
+    })
+  }
+
+  public equality(): void {
+    this.socket.emit('equality', this._player);
+  }
+
   public newGame(): void {
     this._player.turn = false;
     this.socket.emit('newGame', this._player);
@@ -54,6 +66,18 @@ export class GameService implements OnInit {
       this.socket.on('replay', (ennemyPlayer: Player) => {
         obs.next(ennemyPlayer)
       });
+    });
+  }
+
+  public endGame(): void {
+     this.socket.emit('endGame', this._player);
+  }
+
+  public onEndGame(): Observable<Player> {
+    return new Observable<Player>((obs) => {
+      this.socket.on('endGame', (player: Player) => {
+        obs.next(player);
+      })
     });
   }
 

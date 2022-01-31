@@ -51,6 +51,11 @@ io.on('connect', (socket) => {
         io.in(player.roomId).emit('play', player);
     });
 
+    socket.on('equality', (player) => {
+        console.log("eq")
+        io.in(player.roomId).emit('equality', player);
+    });
+
     socket.on('replay', (player) => {
         io.in(player.roomId).emit('replay', player);
     });
@@ -60,6 +65,10 @@ io.on('connect', (socket) => {
         console.log(player);
         room = rooms.find(room => room.id === player.roomId);
         io.in(room.id).emit('gameStarting', room.players);
+    });
+
+    socket.on('endGame', (player) => {
+        io.in(player.roomId).emit('endGame', player);
     });
 
     socket.on('disconnect', () => {

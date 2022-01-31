@@ -1,15 +1,15 @@
 <h1> {{ turnMessage }} </h1>
 
-<ion-button (click)="replay()" color="primary" *ngIf="gameEnded && !isReplayAsked">Nouvelle Partie</ion-button>
+<ion-button shape="round" fill="outline" (click)="replay()" color="primary"
+  *ngIf="gameEnded && !isReplayAsked && !playerLeft">Nouvelle
+  Partie 🔄
+</ion-button>
+<ion-button (click)="quit()" color="primary" *ngIf="playerLeft" shape="round" fill="outline">Quitter 🏠</ion-button>
 
 <ion-buttons *ngIf="isReplayAsked">
   <ion-button (click)="acceptReplay()">✅</ion-button>
   <ion-button (click)="endGame()">❌</ion-button>
 </ion-buttons>
-
-<h2 *ngIf="winner">
-  Player {{ winner }} won the game!
-</h2>
 
 <main>
   <app-square *ngFor="let val of squares; let i = index" [value]="val" (click)="makeMove(i)">
