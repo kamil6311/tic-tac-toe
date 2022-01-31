@@ -98,6 +98,6 @@ function generateRoomId() {
     return Math.random().toString(36).substring(2, 6);
 }
 
-server.listen(process.env.PORT | 3000, function() {
-    console.log("server started on port :3000...");
+server.listen(process.env.PORT || 3000, function() {
+    console.log("server started on port: " + process.env.PORT);
 })

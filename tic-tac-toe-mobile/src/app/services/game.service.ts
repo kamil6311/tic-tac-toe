@@ -17,7 +17,7 @@ export class GameService {
   }
 
   constructor() {
-    this.socket = io('http://localhost:3000');
+    this.socket = io("https://morpion-server.herokuapp.com");
   }
 
   public play(playedCell: number, isWinner: boolean): void {
