@@ -1,6 +1,11 @@
 <h1> {{ turnMessage }} </h1>
 
-<button nbButton outline status="danger" (click)="newGame()">Start new Game</button>
+<ion-button (click)="replay()" color="primary" *ngIf="gameEnded && !isReplayAsked">Nouvelle Partie</ion-button>
+
+<ion-buttons *ngIf="isReplayAsked">
+  <ion-button (click)="acceptReplay()">✅</ion-button>
+  <ion-button (click)="endGame()">❌</ion-button>
+</ion-buttons>
 
 <h2 *ngIf="winner">
   Player {{ winner }} won the game!

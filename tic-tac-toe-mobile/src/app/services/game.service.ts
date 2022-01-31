@@ -18,9 +18,6 @@ export class GameService implements OnInit {
 
   constructor() {
     this.socket = io('http://localhost:3000');
-    this.socket.on('play', (ennemyPlayer: Player) => {
-      console.log("jfklsjfklsjfgkjglk");
-    });
   }
 
   ngOnInit(): void {
@@ -37,11 +34,27 @@ export class GameService implements OnInit {
   public onPlayed(): Observable<Player> {
     return new Observable<Player>((obs) => {
       this.socket.on('play', (ennemyPlayer: Player) => {
-        console.log("jfklsjfklsjfgkjglk");
-
         obs.next(ennemyPlayer)
       });
-    })
+    });
+  }
+
+  public replay(): void{
+    this._player.turn = true;
+    this.socket.emit('replay', this._player);
+  }
+
+  public newGame(): void {
+    this._player.turn = false;
+    this.socket.emit('newGame', this._player);
+  }
+
+  public onReplay(): Observable<Player> {
+    return new Observable<Player>((obs) => {
+      this.socket.on('replay', (ennemyPlayer: Player) => {
+        obs.next(ennemyPlayer)
+      });
+    });
   }
 
   public get socketId(){
@@ -96,6 +109,7 @@ export class GameService implements OnInit {
     return new Observable<Player>((obs) => {
       this.socket.on('gameStarting', (players: Player[]) => {
         console.log("game starting");
+        this._player.win = false;
         obs.next(players.find(p => p.socketId != this._player.socketId))
       });
     });

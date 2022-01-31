@@ -48,8 +48,18 @@ io.on('connect', (socket) => {
     });
 
     socket.on('play', (player) => {
-        console.log(player.roomId);
         io.in(player.roomId).emit('play', player);
+    });
+
+    socket.on('replay', (player) => {
+        io.in(player.roomId).emit('replay', player);
+    });
+
+    socket.on('newGame', (player) => {
+        let room = null;
+        console.log(player);
+        room = rooms.find(room => room.id === player.roomId);
+        io.in(room.id).emit('gameStarting', room.players);
     });
 
     socket.on('disconnect', () => {

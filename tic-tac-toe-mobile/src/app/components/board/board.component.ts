@@ -16,15 +16,17 @@ export class BoardComponent implements OnInit {
 
   public ennemyPlayer: Player;
   public turnMessage: string;
+  public gameEnded: boolean = false;
+  public isReplayAsked: boolean = false;
 
   constructor(private _gameService: GameService) {
-
   }
 
   ngOnInit() {
     this._gameService.startGame().pipe(
       tap((ennemyPlayer: Player) => {
-        if(this._gameService.player.host && this._gameService.player.turn){
+        this.newGame();
+        if(this._gameService.player.turn){
           this.turnMessage = `C'est ton tour de jouer !`;
         }
         else{
@@ -38,19 +40,23 @@ export class BoardComponent implements OnInit {
         const player = this._gameService.player;
 
         if(ennemyPlayer.socketId !== player.socketId && !ennemyPlayer.turn){
-          //modifier la case avec played cell de enemy
           this.squares.splice(ennemyPlayer.playedCell, 1, 'O');
 
           if(ennemyPlayer.win){
-            //perdu
+            this.turnMessage = `😢 Vous avez perdu !`;
+            this.gameEnded = true;
+            return;
           }
 
           this.turnMessage = `C'est ton tour de jouer !`;
           this._gameService.player.turn = true;
         }
         else {
+
           if(player.win){
-            //win
+            this.turnMessage = `😁 Vous avez gagné !`;
+            this.gameEnded = true;
+            return;
           }
 
           this.turnMessage = `C'est au tour de ${ennemyPlayer.username} de jouer !`;
@@ -59,28 +65,52 @@ export class BoardComponent implements OnInit {
       })
     ).subscribe();
 
-    this.newGame();
+    this._gameService.onReplay().pipe(
+      tap((ennemyPlayer: Player) => {
+        const player = this._gameService.player;
+
+        if(ennemyPlayer.socketId !== player.socketId){
+          this.turnMessage = `${ennemyPlayer.username} propose de rejouer 🔄`;
+          this.isReplayAsked = true;
+        }
+        else {
+          this.turnMessage = `Attente de la réponse de ${ennemyPlayer.username}`;
+        }
+
+      })
+    ).subscribe();
+
   }
 
   public newGame(): void {
     this.squares = Array(9).fill(null);
+    this.gameEnded = false;
   }
 
-  public get player() {
-    return this.xIsNext ?  'X' : 'O';
+  public replay(): void {
+    this._gameService.replay();
+  }
+
+  public acceptReplay(): void {
+    this._gameService.newGame();
+    this.isReplayAsked = false;
+  }
+
+  public endGame(){
   }
 
   public makeMove(index: number): void {
-    let win: boolean = false;
+    if(this._gameService.player.turn && !this.squares[index]){
+      let win: boolean = false;
 
-    if(!this.squares[index]){
       this.squares.splice(index, 1, 'X');
-    }
 
-    if(this.calculateWinner() && this.calculateWinner() === 'X'){
-      win = true;
+      if(this.calculateWinner() && this.calculateWinner() === 'X'){
+        win = true;
+      }
+
+      this._gameService.play(index, win);
     }
-    this._gameService.play(index, win);
   }
 
   public calculateWinner(): string {
