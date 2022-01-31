@@ -1,6 +1,7 @@
 <div class="header">
   <h2> {{ turnMessage }} </h2>
 
+  <br>
   <ion-button shape="round" fill="outline" (click)="replay()" color="primary"
     *ngIf="gameEnded && !isReplayAsked && !playerLeft">Nouvelle
     Partie 🔄
@@ -12,7 +13,6 @@
     <ion-button (click)="endGame()">❌</ion-button>
   </ion-buttons>
 </div>
-
 
 <ion-grid>
   <ion-row>

@@ -16,7 +16,7 @@
       <ion-input #roomInput placeholder="Identifiant partie"></ion-input>
     </ion-item>
     <br>
-    <ion-button size="small" shape="round" fill="outline" [disabled]="!usernameInput.value || !roomInput.value"
+    <ion-button shape="round" fill="outline" [disabled]="!usernameInput.value || !roomInput.value"
       (click)="joinGame(usernameInput.value.toString(), roomInput.value.toString())">
       Rejoindre !
     </ion-button>
