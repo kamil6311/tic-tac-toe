@@ -12,13 +12,20 @@ import { GameService } from '../../services/game.service';
 })
 export class HomePage extends ComponentBase {
 
+  squares = Array(9).fill(null);
+
   private room: string = "";
+
   constructor(
     private _router: Router,
     private _gameService: GameService,
     private _alterCtrl: AlertController
     ) {
       super();
+    }
+
+    public makeMove(index) {
+      this.squares.splice(index, 1, 'X');
     }
 
   public createGame(username: string): void{

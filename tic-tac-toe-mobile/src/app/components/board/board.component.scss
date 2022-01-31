@@ -1,11 +1,18 @@
-main {
+ion-col {
+  grid-template-columns: 33.5% 33.5% 33.5%;
   display: grid;
-  grid-template-columns: 20% 20% 20%;
-  grid-gap: 0px;
 }
 
 app-square {
   border: 1px gray solid;
-  height: 10rem;
+  height: 8rem;
   background-color: lightgray;
+}
+
+.header {
+  text-align: center;
+}
+
+ion-grid {
+  padding-top: 20%;
 }

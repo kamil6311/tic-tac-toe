@@ -1,18 +1,29 @@
 <ion-content>
-  <ion-label>
-    <ion-input #usernameInput placeholder="nom"></ion-input>
-  </ion-label>
+  <ion-grid class="content">
 
-  <ion-label>
-    <ion-input #roomInput placeholder="identifiant de partie"></ion-input>
-  </ion-label>
+    <ion-item>
+      <ion-input #usernameInput placeholder="Pseudo"></ion-input>
+    </ion-item>
+    <br>
+    <ion-buttons>
+      <ion-button (click)="createGame(usernameInput.value.toString())" color="primary">
+        Créer une partie !
+      </ion-button>
+    </ion-buttons>
+
+    <br><br>
+    <ion-item>
+      <ion-input #roomInput placeholder="Identifiant partie"></ion-input>
+    </ion-item>
+    <br>
+    <ion-button size="small" shape="round" fill="outline" [disabled]="!usernameInput.value || !roomInput.value"
+      (click)="joinGame(usernameInput.value.toString(), roomInput.value.toString())">
+      Rejoindre !
+    </ion-button>
+  </ion-grid>
 
 
-  <ion-button (click)="createGame(usernameInput.value.toString())">
-    Créer une partie !
-  </ion-button>
-  <ion-button [disabled]="!usernameInput.value || !roomInput.value"
-    (click)="joinGame(usernameInput.value.toString(), roomInput.value.toString())">
-    Rejoindre !
-  </ion-button>
+
+
+
 </ion-content>
