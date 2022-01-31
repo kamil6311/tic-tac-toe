@@ -9,7 +9,7 @@
 
 
   <ion-button (click)="createGame(usernameInput.value.toString())">
-    Jouer !
+    Créer une partie !
   </ion-button>
   <ion-button [disabled]="!usernameInput.value || !roomInput.value"
     (click)="joinGame(usernameInput.value.toString(), roomInput.value.toString())">

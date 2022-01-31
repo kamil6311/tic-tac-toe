@@ -24,6 +24,7 @@ export class BoardComponent extends ComponentBase implements OnInit {
   public isReplayAsked: boolean = false;
   public playerLeft: boolean = false;
   public win: boolean = false;
+  public roomId: string;
 
   constructor(private _gameService: GameService, private _router: Router, private _loadingCtrl: LoadingController) {
     super();
@@ -181,7 +182,8 @@ export class BoardComponent extends ComponentBase implements OnInit {
 
   private async presentLoader(): Promise<void> {
     this._loadingElement = await this._loadingCtrl.create({
-      message: "En attente d'un deuxième joueur",
+      message: `En attente d'un deuxième joueur (Id: ${this._gameService.player.roomId})`,
+
       animated: true,
       spinner: 'bubbles',
     });

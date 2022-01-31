@@ -95,10 +95,9 @@ function createRoom(player){
 }
 
 function generateRoomId() {
-    return Math.random().toString(36).substring(2, 8);
+    return Math.random().toString(36).substring(2, 6);
 }
 
-
-server.listen(3000, function() {
+server.listen(process.env.PORT | 3000, function() {
     console.log("server started on port :3000...");
 })

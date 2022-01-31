@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { PlayGuard } from './guards/play.guard';
 
 const routes: Routes = [
   {
@@ -8,7 +9,7 @@ const routes: Routes = [
   },
   {
     path: 'play/:roomId',
-    loadChildren: () => import('./pages/play/play.module').then(m => m.PlayPageModule)
+    loadChildren: () => import('./pages/play/play.module').then(m => m.PlayPageModule), canActivate: [PlayGuard]
   },
   {
     path: '',

@@ -13,7 +13,6 @@ import { GameService } from '../../services/game.service';
 export class HomePage extends ComponentBase {
 
   private room: string = "";
-
   constructor(
     private _router: Router,
     private _gameService: GameService,
