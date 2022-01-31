@@ -1,15 +1,16 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { tap } from 'rxjs/operators';
-import { GameService } from 'src/app/services/game.service';
+import { takeUntil, tap } from 'rxjs/operators';
+import { ComponentBase } from '../../components/component-base/component-base.component';
+import { GameService } from '../../services/game.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit, OnDestroy {
+export class HomePage extends ComponentBase {
 
   private room: string = "";
 
@@ -17,13 +18,9 @@ export class HomePage implements OnInit, OnDestroy {
     private _router: Router,
     private _gameService: GameService,
     private _alterCtrl: AlertController
-    ) {}
-
-  ngOnDestroy(): void {
-  }
-
-  ngOnInit(): void {
-  }
+    ) {
+      super();
+    }
 
   public createGame(username: string): void{
     this._gameService.setPlayerUsername(username);
@@ -32,7 +29,8 @@ export class HomePage implements OnInit, OnDestroy {
         if(result.joined){
           this._router.navigateByUrl(`/play/${result.room}`);
         }
-      })
+      }),
+      takeUntil(this.destroyed$)
     ).subscribe();
   }
 
@@ -42,7 +40,8 @@ export class HomePage implements OnInit, OnDestroy {
         if(result.joined){
           this._router.navigateByUrl(`/play/${result.room}`);
         }
-      })
+      }),
+      takeUntil(this.destroyed$)
     ).subscribe();
   }
 

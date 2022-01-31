@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
-import { tap } from 'rxjs/operators';
+import { takeUntil, tap } from 'rxjs/operators';
 import { Player } from '../../model/player';
 import { GameService } from '../../services/game.service';
+import { ComponentBase } from '../component-base/component-base.component';
 
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss'],
 })
-export class BoardComponent implements OnInit {
+export class BoardComponent extends ComponentBase implements OnInit {
 
   private _loadingElement: HTMLIonLoadingElement;
 
@@ -24,8 +25,8 @@ export class BoardComponent implements OnInit {
   public playerLeft: boolean = false;
   public win: boolean = false;
 
-
   constructor(private _gameService: GameService, private _router: Router, private _loadingCtrl: LoadingController) {
+    super();
   }
 
   public async ngOnInit() {
@@ -42,7 +43,8 @@ export class BoardComponent implements OnInit {
         else{
           this.turnMessage = `C'est au tour de ${ennemyPlayer.username} de jouer !`;
         }
-      })
+      }),
+      takeUntil(this.destroyed$)
     ).subscribe();
 
     this._gameService.onPlayed().pipe(
@@ -72,8 +74,8 @@ export class BoardComponent implements OnInit {
           this.turnMessage = `C'est au tour de ${ennemyPlayer.username} de jouer !`;
           this._gameService.player.turn = false;
         }
-
-      })
+      }),
+      takeUntil(this.destroyed$)
     ).subscribe();
 
     this._gameService.onReplay().pipe(
@@ -87,8 +89,8 @@ export class BoardComponent implements OnInit {
         else {
           this.turnMessage = `Attente de la réponse de ${ennemyPlayer.username}`;
         }
-
-      })
+      }),
+      takeUntil(this.destroyed$)
     ).subscribe();
 
     this._gameService.onEndGame().pipe(
@@ -97,14 +99,16 @@ export class BoardComponent implements OnInit {
           this.turnMessage = `${ennemyPlayer.username} à quitté la partie...`;
           this.playerLeft = true;
         }
-      })
+      }),
+      takeUntil(this.destroyed$)
     ).subscribe();
 
     this._gameService.onEquality().pipe(
       tap(() => {
         this.turnMessage = `Égalité !`;
         this.gameEnded = true;
-      })
+      }),
+      takeUntil(this.destroyed$)
     ).subscribe();
   }
 

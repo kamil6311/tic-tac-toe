@@ -1,4 +1,4 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { Player } from '../model/player';
@@ -6,7 +6,7 @@ import { Player } from '../model/player';
 @Injectable({
   providedIn: 'root'
 })
-export class GameService implements OnInit {
+export class GameService {
 
   private socket: Socket;
 
@@ -18,10 +18,6 @@ export class GameService implements OnInit {
 
   constructor() {
     this.socket = io('http://localhost:3000');
-  }
-
-  ngOnInit(): void {
-
   }
 
   public play(playedCell: number, isWinner: boolean): void {
