@@ -11,9 +11,14 @@ export class GameService {
   private socket: Socket;
 
   private _player: Player = new Player("", true, true, "");
+  private _ennemyPlayer: Player = new Player("", true, true, "");
 
   public get player(): Player {
     return this._player;
+  }
+
+  public get ennemyPlayer(): Player {
+    return this._ennemyPlayer;
   }
 
   constructor() {
@@ -81,10 +86,6 @@ export class GameService {
     return this.socket.id;
   }
 
-  public setPlayerUsername(username: string): Player {
-    return this._player = new Player(username, true, true, this.socket.id);
-  }
-
   public getNbPlayersRoom(room: string): Observable<{ nbPlayers: number }> {
     return new Observable<{ nbPlayers: number }>((obs) => {
       this.socket.emit('getNbPlayersRoom', { room: room }, (cb: { nbPlayers: number }) => {
@@ -93,11 +94,15 @@ export class GameService {
     })
   }
 
-  public createGame(): Observable<{ joined: boolean, room: string, message: string }>{
+  public createGame(username: string): Observable<{ joined: boolean, room: string, message: string }>{
+    this._player = new Player(username, true, true, this.socket.id);
+    console.log(this._player);
+
     return new Observable<{ joined: boolean, room: string, message: string }>(obs => {
-      this.socket.emit('playerData', this.player, (cb: { joined: boolean, room: string, message: string })  => {
+      this.socket.emit('playerData', this._player, (cb: { joined: boolean, room: string, message: string })  => {
         console.log(cb);
         this._player.roomId = cb.room;
+        this._player.win = false;
         obs.next(cb);
       });
     })
@@ -106,7 +111,7 @@ export class GameService {
   public joinGame(username: string, roomId: string): Observable<{ joined: boolean, room: string, message: string }>{
     this._player = new Player(username, false, false, this.socket.id, roomId);
     return new Observable<{ joined: boolean, room: string, message: string }>(obs => {
-      this.socket.emit('playerData', this.player, (cb: { joined: boolean, room: string, message: string })  => {
+      this.socket.emit('playerData', this._player, (cb: { joined: boolean, room: string, message: string })  => {
         console.log(cb);
         obs.next(cb);
       });
@@ -130,7 +135,8 @@ export class GameService {
       this.socket.on('gameStarting', (players: Player[]) => {
         console.log("game starting");
         this._player.win = false;
-        obs.next(players.find(p => p.socketId != this._player.socketId))
+        this._ennemyPlayer = players.find(p => p.socketId !== this._player.socketId);
+        obs.next(players.find(p => p.socketId !== this._player.socketId))
       });
     });
   }

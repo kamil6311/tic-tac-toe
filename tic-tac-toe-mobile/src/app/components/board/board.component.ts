@@ -51,8 +51,9 @@ export class BoardComponent extends ComponentBase implements OnInit {
     this._gameService.onPlayed().pipe(
       tap((ennemyPlayer: Player) => {
         const player = this._gameService.player;
+        const ennemy = this._gameService.ennemyPlayer;
 
-        if(ennemyPlayer.socketId !== player.socketId && !ennemyPlayer.turn){
+        if(ennemyPlayer.socketId !== this._gameService.player.socketId && !ennemyPlayer.turn){
           this.squares.splice(ennemyPlayer.playedCell, 1, 'O');
 
           if(ennemyPlayer.win){
@@ -60,20 +61,18 @@ export class BoardComponent extends ComponentBase implements OnInit {
             this.gameEnded = true;
             return;
           }
-
-          this.turnMessage = `C'est ton tour de jouer !`;
           this._gameService.player.turn = true;
+          this.turnMessage = `C'est ton tour de jouer !`;
         }
         else {
-
           if(player.win){
             this.turnMessage = `😁 Vous avez gagné !`;
             this.gameEnded = true;
             return;
           }
 
-          this.turnMessage = `C'est au tour de ${ennemyPlayer.username} de jouer !`;
           this._gameService.player.turn = false;
+          this.turnMessage = `C'est au tour de ${ennemy.username} de jouer !`;
         }
       }),
       takeUntil(this.destroyed$)
@@ -82,13 +81,14 @@ export class BoardComponent extends ComponentBase implements OnInit {
     this._gameService.onReplay().pipe(
       tap((ennemyPlayer: Player) => {
         const player = this._gameService.player;
+        const ennemy = this._gameService.ennemyPlayer;
 
         if(ennemyPlayer.socketId !== player.socketId){
-          this.turnMessage = `${ennemyPlayer.username} propose de rejouer 🔄`;
+          this.turnMessage = `${ennemy.username} propose de rejouer 🔄`;
           this.isReplayAsked = true;
         }
         else {
-          this.turnMessage = `Attente de la réponse de ${ennemyPlayer.username}`;
+          this.turnMessage = `Attente de la réponse de ${ennemy.username}`;
         }
       }),
       takeUntil(this.destroyed$)
@@ -96,8 +96,10 @@ export class BoardComponent extends ComponentBase implements OnInit {
 
     this._gameService.onEndGame().pipe(
       tap((ennemyPlayer: Player) => {
+        const ennemy = this._gameService.ennemyPlayer;
+
         if(ennemyPlayer.socketId !== this._gameService.player.socketId){
-          this.turnMessage = `${ennemyPlayer.username} à quitté la partie...`;
+          this.turnMessage = `${ennemy.username} à quitté la partie...`;
           this.playerLeft = true;
         }
       }),

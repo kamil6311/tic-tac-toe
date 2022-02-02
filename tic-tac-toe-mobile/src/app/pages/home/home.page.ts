@@ -29,8 +29,7 @@ export class HomePage extends ComponentBase {
     }
 
   public createGame(username: string): void{
-    this._gameService.setPlayerUsername(username);
-    this._gameService.createGame().pipe(
+    this._gameService.createGame(username).pipe(
       tap((result: { joined: boolean, room: string, message: string }) => {
         if(result.joined){
           this._router.navigateByUrl(`/play/${result.room}`);
