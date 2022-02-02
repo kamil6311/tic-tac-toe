@@ -17,6 +17,10 @@ export class GameService {
     return this._player;
   }
 
+  public set player(player: Player) {
+    this._player = player;
+  }
+
   public get ennemyPlayer(): Player {
     return this._ennemyPlayer;
   }
@@ -59,6 +63,7 @@ export class GameService {
 
   public newGame(): void {
     this._player.turn = false;
+    this._player.win = false;
     this.socket.emit('newGame', this._player);
   }
 
@@ -140,5 +145,4 @@ export class GameService {
       });
     });
   }
-
 }

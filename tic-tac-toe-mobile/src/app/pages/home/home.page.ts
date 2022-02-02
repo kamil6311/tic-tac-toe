@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
 import { takeUntil, tap } from 'rxjs/operators';
 import { ComponentBase } from '../../components/component-base/component-base.component';
 import { GameService } from '../../services/game.service';
@@ -19,7 +19,7 @@ export class HomePage extends ComponentBase {
   constructor(
     private _router: Router,
     private _gameService: GameService,
-    private _alterCtrl: AlertController
+    private _navCtrl: NavController,
     ) {
       super();
     }
@@ -32,7 +32,7 @@ export class HomePage extends ComponentBase {
     this._gameService.createGame(username).pipe(
       tap((result: { joined: boolean, room: string, message: string }) => {
         if(result.joined){
-          this._router.navigateByUrl(`/play/${result.room}`);
+          this._navCtrl.navigateRoot(`/play/${result.room}`)
         }
       }),
       takeUntil(this.destroyed$)
@@ -43,11 +43,10 @@ export class HomePage extends ComponentBase {
     this._gameService.joinGame(username, room).pipe(
       tap((result: { joined: boolean, room: string, message: string }) => {
         if(result.joined){
-          this._router.navigateByUrl(`/play/${result.room}`);
+          this._navCtrl.navigateRoot(`/play/${result.room}`)
         }
       }),
       takeUntil(this.destroyed$)
     ).subscribe();
   }
-
 }

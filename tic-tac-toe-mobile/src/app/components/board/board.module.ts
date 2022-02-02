@@ -11,7 +11,7 @@ import { BoardComponent } from './board.component';
   imports: [
     CommonModule,
     SquareModule,
-    IonicModule
+    IonicModule,
   ],
   exports: [BoardComponent]
 })

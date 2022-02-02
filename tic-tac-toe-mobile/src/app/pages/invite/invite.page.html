@@ -1,0 +1,14 @@
+<ion-content>
+  <ion-grid class="content">
+    <ion-item>
+      <ion-input #usernameInput placeholder="Pseudo"></ion-input>
+    </ion-item>
+    <br>
+    <ion-buttons>
+      <ion-button (click)="joinGame(usernameInput.value.toString())" color="primary">
+        Rejoindre ! ▶️
+      </ion-button>
+    </ion-buttons>
+  </ion-grid>
+
+</ion-content>

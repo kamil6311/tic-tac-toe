@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { LoadingController } from '@ionic/angular';
+import { LoadingController, NavController } from '@ionic/angular';
 import { takeUntil, tap } from 'rxjs/operators';
 import { Player } from '../../model/player';
 import { GameService } from '../../services/game.service';
@@ -26,13 +25,14 @@ export class BoardComponent extends ComponentBase implements OnInit {
   public win: boolean = false;
   public roomId: string;
 
-  constructor(private _gameService: GameService, private _router: Router, private _loadingCtrl: LoadingController) {
+  constructor(private _gameService: GameService, private _navCtrl: NavController, private _loadingCtrl: LoadingController) {
     super();
   }
 
   public async ngOnInit() {
+    this.roomId = this._gameService.player.roomId;
     if(this._gameService.player.host){
-      await this.presentLoader();
+      //await this.presentLoader();
     }
 
     this._gameService.startGame().pipe(
@@ -65,7 +65,7 @@ export class BoardComponent extends ComponentBase implements OnInit {
           this.turnMessage = `C'est ton tour de jouer !`;
         }
         else {
-          if(player.win){
+          if(this._gameService.player.win){
             this.turnMessage = `😁 Vous avez gagné !`;
             this.gameEnded = true;
             return;
@@ -118,6 +118,7 @@ export class BoardComponent extends ComponentBase implements OnInit {
   public newGame(): void {
     this.squares = Array(9).fill(null);
     this.gameEnded = false;
+    this.win = false;
     if(this._loadingElement){
       this._loadingElement.dismiss();
     }
@@ -134,11 +135,13 @@ export class BoardComponent extends ComponentBase implements OnInit {
 
   public endGame(){
     this._gameService.endGame();
-    this._router.navigateByUrl('/home');
+    this._gameService.player = null;
+    this._navCtrl.navigateBack('/home');
   }
 
   public quit(): void{
-    this._router.navigateByUrl('/home');
+    this._gameService.player = null;
+    this._navCtrl.navigateBack('/home');
   }
 
   public makeMove(index: number): void {

@@ -12,6 +12,10 @@ const routes: Routes = [
     loadChildren: () => import('./pages/play/play.module').then(m => m.PlayPageModule), canActivate: [PlayGuard]
   },
   {
+    path: 'invite/:roomId',
+    loadChildren: () => import('./pages/invite/invite.module').then( m => m.InvitePageModule)
+  },
+  {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'
