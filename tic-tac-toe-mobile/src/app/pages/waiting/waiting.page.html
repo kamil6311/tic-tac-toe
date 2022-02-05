@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Sale d'attente</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col class="ion-text-center" size="12" sizeLg="6" offsetLg="3" offsetSm="0">
+        <div style="display: block;">
+          <ion-label>Attente d'un autre joueur</ion-label>
+        </div>
+        <ion-spinner name="dots"></ion-spinner>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ng-container *ngFor="let poPlayer of paPlayers">
+          <ion-item>
+            <ion-label>{{poPlayer.username}}</ion-label>
+          </ion-item>
+        </ng-container>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col offset="3" size="6">
+        <ion-button shape="outline" color="tertiary" size="small" class="change-sm">
+          {{'https://morpion-app.herokuapp.com/invite/'+psRoomId}}
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

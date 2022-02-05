@@ -29,10 +29,13 @@ export class HomePage extends ComponentBase {
     }
 
   public createGame(username: string): void{
+    if(!username){
+      return;
+    }
     this._gameService.createGame(username).pipe(
       tap((result: { joined: boolean, room: string, message: string }) => {
         if(result.joined){
-          this._navCtrl.navigateRoot(`/play/${result.room}`)
+          this._navCtrl.navigateRoot(`/waiting/${result.room}`)
         }
       }),
       takeUntil(this.destroyed$)
@@ -40,10 +43,13 @@ export class HomePage extends ComponentBase {
   }
 
   public joinGame(username, room){
+    if(!username || room){
+      return;
+    }
     this._gameService.joinGame(username, room).pipe(
       tap((result: { joined: boolean, room: string, message: string }) => {
         if(result.joined){
-          this._navCtrl.navigateRoot(`/play/${result.room}`)
+          this._navCtrl.navigateRoot(`/waiting/${result.room}`)
         }
       }),
       takeUntil(this.destroyed$)

@@ -32,7 +32,7 @@ export class BoardComponent extends ComponentBase implements OnInit {
   public async ngOnInit() {
     this.roomId = this._gameService.player.roomId;
     if(this._gameService.player.host){
-      //await this.presentLoader();
+      await this.presentLoader();
     }
 
     this._gameService.startGame().pipe(

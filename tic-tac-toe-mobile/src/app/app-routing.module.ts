@@ -16,10 +16,15 @@ const routes: Routes = [
     loadChildren: () => import('./pages/invite/invite.module').then( m => m.InvitePageModule)
   },
   {
+    path: 'waiting/:roomId',
+    loadChildren: () => import('./pages/waiting/waiting.module').then( m => m.WaitingPageModule)
+  },
+  {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'
   },
+
 ];
 
 @NgModule({
